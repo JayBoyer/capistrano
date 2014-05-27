@@ -99,7 +99,7 @@ module Capistrano
           File.open(File.join(destination, "REVISION"), "w") { |f| f.puts(revision) }
 
           logger.trace "compressing #{destination} to #{filename}"
-          Dir.chdir(tmpdir) { system(compress(File.basename(destination), File.basename(filename)).join(" ")) }
+          Dir.chdir("/tmp") { system(compress(File.basename(destination), File.basename(filename)).join(" ")) }
 
           distribute!
         ensure
@@ -121,7 +121,7 @@ module Capistrano
         # is +true+, a default cache location will be returned.
         def copy_cache
           @copy_cache ||= configuration[:copy_cache] == true ?
-            File.join(Dir.tmpdir, configuration[:application]) :
+            File.join("/tmp", configuration[:application]) :
             configuration[:copy_cache]
         end
 
@@ -136,7 +136,7 @@ module Capistrano
           # Returns the basename of the release_path, which will be used to
           # name the local copy and archive file.
           def destination
-            @destination ||= File.join(tmpdir, File.basename(configuration[:release_path]))
+            @destination ||= File.join("/tmp", File.basename(configuration[:release_path]))
           end
 
           # Returns the value of the :copy_strategy variable, defaulting to
@@ -159,12 +159,12 @@ module Capistrano
           # Returns the name of the file that the source code will be
           # compressed to.
           def filename
-            @filename ||= File.join(tmpdir, "#{File.basename(destination)}.#{compression.extension}")
+            @filename ||= File.join("/tmp", "#{File.basename(destination)}.#{compression.extension}")
           end
 
           # The directory to which the copy should be checked out
           def tmpdir
-            @tmpdir ||= configuration[:copy_dir] || Dir.tmpdir
+            @tmpdir ||= configuration[:copy_dir] || "/tmp"
           end
 
           # The directory on the remote server to which the archive should be
